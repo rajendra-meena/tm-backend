@@ -24,7 +24,7 @@ Email: ${user.email}
 Password: ${req.body.password}
 
 Click the link below to log in and start managing your trips:
-https://tmanagment-system.netlify.app/driver/my_trips
+https://transport-managment.netlify.app
 
 Best regards,
 Transport Management System Team
