@@ -15,8 +15,8 @@ const logger = winston.createLogger({
 // CORS
 const allowedOrigins = [
   process.env.FRONTEND_URL,
-  "https://digigly.com",
-  "https://www.digigly.com",
+  "https://digiqly.com",
+  "https://www.digiqly.com",
   "http://localhost:3000",
 ].filter(Boolean);
 
