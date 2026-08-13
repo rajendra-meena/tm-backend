@@ -1,3 +1,5 @@
+const sharp = require('sharp');
+const path = require('path');
 const fs = require('fs');
 
 const processImage = async (req, res, next) => {
@@ -6,13 +8,29 @@ const processImage = async (req, res, next) => {
     try {
         const uploadDir = 'uploads';
         if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
+            fs.mkdirSync(uploadDir);
         }
 
-        req.file.path = req.file.path.replace(/\\/g, '/');
-        return next();
+        // Create a unique filename with .webp extension
+        const fileName = `license-${Date.now()}.webp`;
+        const filePath = path.join(uploadDir, fileName);
+
+        // Convert buffer to webp and save to disk (async, non-blocking for subsequent requests)
+        sharp(req.file.buffer)
+            .webp({ quality: 80 })
+            .toFile(filePath)
+            .then(() => {
+                // Replace req.file.path with our new webp file path for the controller
+                req.file.path = filePath.replace(/\\/g, '/'); // Ensure forward slashes for URL consistency
+                next();
+            })
+            .catch(err => {
+                console.error('Image processing async error:', err.message);
+                req.file.path = req.file.path || `uploads/license-${Date.now()}.jpg`;
+                next();
+            });
     } catch (err) {
-        return res.status(500).json({ success: false, error: 'Image processing failed: ' + err.message });
+        res.status(500).json({ success: false, error: 'Image processing failed: ' + err.message });
     }
 };
 
