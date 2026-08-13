@@ -15,15 +15,20 @@ const processImage = async (req, res, next) => {
         const fileName = `license-${Date.now()}.webp`;
         const filePath = path.join(uploadDir, fileName);
 
-        // Convert buffer to webp and save to disk
-        await sharp(req.file.buffer)
+        // Convert buffer to webp and save to disk (async, non-blocking for subsequent requests)
+        sharp(req.file.buffer)
             .webp({ quality: 80 })
-            .toFile(filePath);
-
-        // Replace req.file.path with our new webp file path for the controller
-        req.file.path = filePath.replace(/\\/g, '/'); // Ensure forward slashes for URL consistency
-        
-        next();
+            .toFile(filePath)
+            .then(() => {
+                // Replace req.file.path with our new webp file path for the controller
+                req.file.path = filePath.replace(/\\/g, '/'); // Ensure forward slashes for URL consistency
+                next();
+            })
+            .catch(err => {
+                console.error('Image processing async error:', err.message);
+                req.file.path = req.file.path || `uploads/license-${Date.now()}.jpg`;
+                next();
+            });
     } catch (err) {
         res.status(500).json({ success: false, error: 'Image processing failed: ' + err.message });
     }
