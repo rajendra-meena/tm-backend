@@ -24,7 +24,7 @@ Email: ${user.email}
 Password: ${req.body.password}
 
 Click the link below to log in and start managing your trips:
-https://transport-managment.netlify.app
+https://tm-backend-production-35ba.up.railway.app
 
 Best regards,
 Transport Management System Team
