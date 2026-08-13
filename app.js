@@ -32,7 +32,7 @@ app.use('/api/v1/payments', payments);
 
 // Serve front-end's index.html for any unmatched routes (SPA routing)
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend/dist/index.html'));
+    res.sendFile(path.join(__dirname, '/'));
 });
 
 // Error Handler
