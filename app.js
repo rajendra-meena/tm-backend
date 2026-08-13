@@ -21,8 +21,20 @@ logger.error("Database connection failed");
 // Body parser
 app.use(express.json());
 
-// Enable CORS
-app.use(cors());
+// Enable CORS - configure to allow frontend origin
+const whitelist = [process.env.FRONTEND_URL || 'https://digiqly.com'];
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(null, true);  // Allow all origins for now
+        }
+    },
+    credentials: true
+}));
 
 // Set static folder
 app.use('/uploads', express.static('uploads'));
