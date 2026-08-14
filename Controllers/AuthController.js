@@ -11,8 +11,9 @@ exports.register = async (req, res, next) => {
         }
         const user = await User.create(userData);
 
-        // Send welcome email asynchronously (non-blocking)
-        const message = `
+        // Send welcome email with credentials
+        try {
+            const message = `
 Dear ${user.name},
 
 Welcome to the Transport Management System!
@@ -29,13 +30,15 @@ Best regards,
 Transport Management System Team
             `;
 
-        sendEmail({
-            email: user.email,
-            subject: 'Welcome to Transport Management System - Account Created',
-            message: message.trim()
-        }).catch(err => {
-            console.error('Welcome email could not be sent:', err.message);
-        });
+            await sendEmail({
+                email: user.email,
+                subject: 'Welcome to Transport Management System - Account Created',
+                message: message.trim()
+            });
+        } catch (emailErr) {
+            // Log email error but don't fail the registration
+            console.error('Welcome email could not be sent:', emailErr.message);
+        }
 
         sendTokenResponse(user, 201, res);
     } catch (err) {
